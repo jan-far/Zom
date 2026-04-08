@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+pydantic
+atlas-doc-parser
