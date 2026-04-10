@@ -30,3 +30,4 @@ Error analyzing paper: Error: GEMINI_API_KEY is missing or invalid. Please provi
   76 |       }
   77 |
   78 |       const synthesis = await res.json(); (src/app/dashboard/page.tsx:110:15)
+✓ Compiled in 5.5s

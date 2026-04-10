@@ -4,6 +4,7 @@ import { useState } from "react";
 import { fetchOpenAlexData, OpenAlexWork } from "@/lib/api/openalex";
 import KnowledgeGraph, { GraphNode, GraphLink } from "@/components/knowledge-graph";
 import ReportEditor from "@/components/report-editor";
+import { createProject, addPaperToProject, saveSynthesisForPaper } from "@/lib/firebase/db";
 
 type Operator = "AND" | "OR" | "NOT";
 
@@ -33,6 +34,10 @@ export default function Dashboard() {
   const [graphLinks, setGraphLinks] = useState<GraphLink[]>([]);
   const [synthesisList, setSynthesisList] = useState<SynthesisData[]>([]);
 
+  // Firebase Persistence State
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
+  const mockUserId = "test-user-id"; // In production, grab from Firebase Auth context
+
   const addBlock = () => {
     setQueryBlocks([...queryBlocks, { id: Math.random().toString(), field: "title_abstract", value: "", operator: "AND" }]);
   };
@@ -59,6 +64,23 @@ export default function Dashboard() {
     setLoading(false);
   };
 
+  const ensureProjectExists = async () => {
+    if (currentProjectId) return currentProjectId;
+
+    try {
+      const pid = await createProject({
+        userId: mockUserId,
+        title: `Research Synthesis: ${new Date().toLocaleDateString()}`,
+        description: `Auto-generated project for queries: ${buildQueryString()}`
+      });
+      setCurrentProjectId(pid);
+      return pid;
+    } catch (e) {
+      console.warn("Firebase not properly configured. Proceeding in memory only.", e);
+      return null; // Return null if Firebase falls back/fails so the app doesn't break
+    }
+  };
+
   const analyzeAndAddToProject = async (work: OpenAlexWork) => {
     setAnalyzingIds(prev => new Set(prev).add(work.id));
 
@@ -76,6 +98,27 @@ export default function Dashboard() {
       }
 
       const synthesis = await res.json();
+
+      // Attempt Firebase Persistence
+      const projectId = await ensureProjectExists();
+      if (projectId) {
+        const paperId = await addPaperToProject({
+          projectId,
+          title: work.title || "Untitled",
+          authors: work.authorships.map(a => a.author.display_name),
+          year: work.publication_year,
+          doi: work.doi || undefined,
+          abstract: work.abstract || undefined
+        });
+
+        await saveSynthesisForPaper(projectId, paperId, {
+          territory: synthesis.territory,
+          niche: synthesis.niche,
+          occupyingNiche: synthesis.occupyingNiche,
+          methodology: synthesis.methodology
+        });
+        console.log("Successfully persisted to Firebase project:", projectId);
+      }
 
       // Add to Graph State
       const newNode: GraphNode = {
@@ -123,7 +166,10 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto space-y-8">
 
         <header className="flex justify-between items-center pb-6 border-b border-neutral-200 dark:border-neutral-800">
-          <h1 className="text-3xl font-bold">Research Ingestion</h1>
+          <div>
+            <h1 className="text-3xl font-bold">Research Ingestion</h1>
+            {currentProjectId && <span className="text-xs text-primary-500 font-medium">Session saving to Project: {currentProjectId}</span>}
+          </div>
           <div className="flex gap-4">
             <button className="px-4 py-2 bg-neutral-200 dark:bg-neutral-800 rounded-md text-sm font-medium hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors">
               OpenAlex (Active)
