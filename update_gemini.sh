@@ -1,3 +1,4 @@
+cat << 'INNER_EOF' > src/lib/api/gemini.ts
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const CARS_SYSTEM_PROMPT = `
@@ -51,3 +52,4 @@ export const analyzePaperWithGemini = async (paperText: string) => {
     throw new Error("Failed to analyze paper with Gemini API. Check logs for details.");
   }
 };
+INNER_EOF

@@ -1,3 +1,4 @@
+cat << 'INNER_EOF' > src/app/dashboard/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -237,3 +238,4 @@ export default function Dashboard() {
     </div>
   );
 }
+INNER_EOF

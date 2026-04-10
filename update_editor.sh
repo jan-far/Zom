@@ -1,3 +1,4 @@
+cat << 'INNER_EOF' > src/components/report-editor.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -97,3 +98,4 @@ export default function ReportEditor({ initialValue, projectId, synthesisList = 
     </div>
   );
 }
+INNER_EOF

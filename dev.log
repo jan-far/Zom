@@ -1,0 +1,32 @@
+
+> epistemology-platform@0.1.0 dev
+> next dev
+
+⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
+▲ Next.js 16.2.2 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.0.2:3001
+✓ Ready in 738ms
+
+○ Compiling /dashboard ...
+ GET /dashboard 200 in 6.6s (next.js: 6.0s, application-code: 521ms)
+Error analyzing paper: Error: GEMINI_API_KEY is missing or invalid. Please provide a valid key in .env
+    at analyzePaperWithGemini (src/lib/api/gemini.ts:33:11)
+    at POST (src/app/api/analyze/route.ts:12:51)
+  31 | export const analyzePaperWithGemini = async (paperText: string) => {
+  32 |   if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "mock-api-key") {
+> 33 |     throw new Error("GEMINI_API_KEY is missing or invalid. Please provide a valid key in ....
+     |           ^
+  34 |   }
+  35 |
+  36 |   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+ POST /api/analyze 500 in 1368ms (next.js: 936ms, application-code: 432ms)
+[browser] Error adding to project: Error: Failed to analyze paper
+    at analyzeAndAddToProject (src/app/dashboard/page.tsx:75:15)
+  73 |
+  74 |       if (!res.ok) {
+> 75 |         throw new Error("Failed to analyze paper");
+     |               ^
+  76 |       }
+  77 |
+  78 |       const synthesis = await res.json(); (src/app/dashboard/page.tsx:110:15)

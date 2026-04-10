@@ -1,3 +1,4 @@
+cat << 'INNER_EOF' > src/components/knowledge-graph.tsx
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -82,7 +83,7 @@ export default function KnowledgeGraph({ dataNodes, dataLinks }: KnowledgeGraphP
       }));
 
       const flowEdges: Edge[] = dataLinks.map((link, i) => ({
-        id: `e${i}`,
+        id: \`e\${i}\`,
         source: link.source,
         target: link.target,
         animated: true,
@@ -125,3 +126,4 @@ export default function KnowledgeGraph({ dataNodes, dataLinks }: KnowledgeGraphP
     </div>
   );
 }
+INNER_EOF

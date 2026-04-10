@@ -1,3 +1,4 @@
+cat << 'INNER_EOF' > src/lib/api/openalex.ts
 export interface OpenAlexWork {
   id: string;
   title: string;
@@ -44,3 +45,4 @@ export const fetchOpenAlexData = async (query: string): Promise<OpenAlexWork[]> 
     return [];
   }
 };
+INNER_EOF
